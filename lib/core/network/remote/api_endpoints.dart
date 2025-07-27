@@ -1,6 +1,5 @@
-const String baseUrl = 'https://newsapi.org/';
-const String apiVersion = 'v2/';
+const String baseUrl = 'https://store.mansouracademy.com/api/';
+const String apiVersion = 'v1/';
 
-const String topHeadlinesEndpoint = 'top-headlines';
-
-const String everythingEndpoint = 'everything';
+const String categoriesEndpoint = 'categories';
+const String bannersEndpoint = 'banners';

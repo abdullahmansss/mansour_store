@@ -6,12 +6,16 @@ import 'package:mansour_store/core/util/constants/routes.dart';
 import 'package:mansour_store/features/home/presentation/logic/home_cubit.dart';
 import 'package:mansour_store/features/home/presentation/logic/home_states.dart';
 
+import 'core/util/constants/bloc_observer.dart';
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   DioHelper.init();
+
+  Bloc.observer = MyBlocObserver();
 
   runApp(const MyApp());
 }

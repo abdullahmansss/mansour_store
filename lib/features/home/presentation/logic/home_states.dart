@@ -24,17 +24,29 @@ class GetTopHeadlinesErrorState extends HomeStates {
 
 class GetTopHeadlinesSuccessState extends HomeStates {}
 
-class LoadingState extends HomeStates {}
+class GetBannersLoadingState extends HomeStates {}
 
-class ErrorState extends HomeStates {
+class GetBannersErrorState extends HomeStates {
   final String error;
 
-  ErrorState({
+  GetBannersErrorState({
     required this.error,
   });
 }
 
-class SuccessState extends HomeStates {}
+class GetBannersSuccessState extends HomeStates {}
+
+class GetCategoriesLoadingState extends HomeStates {}
+
+class GetCategoriesErrorState extends HomeStates {
+  final String error;
+
+  GetCategoriesErrorState({
+    required this.error,
+  });
+}
+
+class GetCategoriesSuccessState extends HomeStates {}
 
 class ChangeSelectedIndexState extends HomeStates {}
 

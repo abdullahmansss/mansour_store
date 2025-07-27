@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ) : null,
             actions: [
               if(homeCubit.currentIndex == 0)
-              IconButton(
+                IconButton(
                 icon: Icon(
                   Icons.notifications_none_outlined,
                   color: ColorsManager.textColor,

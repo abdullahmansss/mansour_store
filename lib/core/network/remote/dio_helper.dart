@@ -74,7 +74,18 @@ class DioHelper {
 
       return Right(response.data);
     } on DioException catch (e) {
-      return Left(e.response?.data['message'] ?? 'something went wrong, please try again later');
+      debugPrint('DioHelper.get DioException: ${e.response!.data}');
+      if(e.response != null) {
+        debugPrint('not equal null');
+        if(e.response!.statusCode != 404) {
+          debugPrint('response is Map');
+          if(e.response?.data['message'] != null) {
+            return Left(e.response?.data['message'] ?? 'something went wrong, please try again later');
+          }
+        }
+      }
+
+      return Left('something went wrong, please try again later');
     } catch (e) {
       debugPrint('DioHelper.get error: $e');
       return Left('something went wrong, please try again later');

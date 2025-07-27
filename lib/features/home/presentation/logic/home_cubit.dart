@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mansour_store/core/network/remote/api_endpoints.dart';
+import 'package:mansour_store/core/network/remote/dio_helper.dart';
+import 'package:mansour_store/features/home/data/banners_model.dart';
+import 'package:mansour_store/features/home/data/categories_model.dart';
 import 'package:mansour_store/features/home/presentation/logic/home_states.dart';
 import 'package:mansour_store/features/home/presentation/widgets/cart_widget.dart';
 import 'package:mansour_store/features/home/presentation/widgets/explore_widget.dart';
@@ -53,7 +57,75 @@ class HomeCubit extends Cubit<HomeStates> {
     _currentBannerIndex = index;
     emit(ChangeBannerIndexState());
   }
+
+  CategoriesModel? categoriesModel;
+
+  void getCategories() async {
+    categoriesModel = null;
+
+    emit(GetCategoriesLoadingState());
+
+    final result = await DioHelper.get(
+      path: categoriesEndpoint,
+    );
+
+    result.fold(
+      (l) {
+        emit(
+          GetCategoriesErrorState(
+            error: l,
+          ),
+        );
+      },
+      (r) {
+        categoriesModel = CategoriesModel.fromMap(r);
+
+        debugPrint(
+          'Categories fetched successfully => ${categoriesModel!.categories.length} categories',
+        );
+
+        emit(
+          GetCategoriesSuccessState(),
+        );
+      },
+    );
+  }
+
+  BannersModel? bannersModel;
+
+  void getBanners() async {
+    bannersModel = null;
+
+    emit(GetBannersLoadingState());
+
+    final result = await DioHelper.get(
+      path: bannersEndpoint,
+    );
+
+    result.fold(
+          (l) {
+            debugPrint('GetBannersErrorState => $l');
+        emit(
+          GetBannersErrorState(
+            error: l,
+          ),
+        );
+      },
+          (r) {
+        bannersModel = BannersModel.fromMap(r);
+
+        debugPrint(
+          'banners fetched successfully => ${bannersModel!.banners.length} banners',
+        );
+
+        emit(
+          GetBannersSuccessState(),
+        );
+      },
+    );
+  }
 }
+
 
 
 
