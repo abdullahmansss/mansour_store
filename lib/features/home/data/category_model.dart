@@ -8,7 +8,7 @@ class CategoryModel {
   final String image;
   final bool isActive;
   final int sortOrder;
-  final List<ProductModel> products;
+  final List<CategoryModel> subcategories;
   final String createdAt;
   final String updatedAt;
 
@@ -20,7 +20,7 @@ class CategoryModel {
     required this.image,
     required this.isActive,
     required this.sortOrder,
-    required this.products,
+    required this.subcategories,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -35,9 +35,9 @@ class CategoryModel {
       image: map['image'] as String,
       isActive: map['is_active'] as bool,
       sortOrder: map['sort_order'] as int,
-      products: (map['children'] as List<dynamic>)
-          .map((child) => ProductModel.fromMap(child as Map<String, dynamic>))
-          .toList(),
+      subcategories: map['children'] != null ? (map['children'] as List<dynamic>)
+          .map((child) => CategoryModel.fromMap(child as Map<String, dynamic>))
+          .toList() : [],
       createdAt: map['created_at'] as String,
       updatedAt: map['updated_at'] as String,
     );

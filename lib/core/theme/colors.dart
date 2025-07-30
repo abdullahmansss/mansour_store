@@ -14,5 +14,6 @@ class ColorsManager {
   static const Color darkGreyColor = Color(0xFF546E7A);
   static const Color lightGreyColor = Color(0xFFCFD8DC);
   static const Color errorColor = Color(0xFFD32F2F);
+  static const Color transparent = Color(0x00000000);
   static Color get textColor => homeCubit.isDark ? Color(0xFFFFFFFF) : Color(0xFF2F302E);
 }

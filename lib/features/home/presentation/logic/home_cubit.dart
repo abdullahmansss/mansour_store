@@ -4,6 +4,8 @@ import 'package:mansour_store/core/network/remote/api_endpoints.dart';
 import 'package:mansour_store/core/network/remote/dio_helper.dart';
 import 'package:mansour_store/features/home/data/banners_model.dart';
 import 'package:mansour_store/features/home/data/categories_model.dart';
+import 'package:mansour_store/features/home/data/category_model.dart';
+import 'package:mansour_store/features/home/data/products_model.dart';
 import 'package:mansour_store/features/home/presentation/logic/home_states.dart';
 import 'package:mansour_store/features/home/presentation/widgets/cart_widget.dart';
 import 'package:mansour_store/features/home/presentation/widgets/explore_widget.dart';
@@ -80,6 +82,8 @@ class HomeCubit extends Cubit<HomeStates> {
       (r) {
         categoriesModel = CategoriesModel.fromMap(r);
 
+        selectedCategory = categoriesModel!.categories.isNotEmpty ? categoriesModel!.categories.first : null;
+
         debugPrint(
           'Categories fetched successfully => ${categoriesModel!.categories.length} categories',
         );
@@ -89,6 +93,30 @@ class HomeCubit extends Cubit<HomeStates> {
         );
       },
     );
+  }
+
+  CategoryModel? _selectedCategory;
+
+  CategoryModel? get selectedCategory => _selectedCategory;
+
+  set selectedCategory(CategoryModel? category) {
+    if (_selectedCategory == category) return;
+
+    _selectedCategory = category;
+
+    if (_selectedCategory != null) {
+      ProductsModel? cachedProducts = getProductsByCategoryId(_selectedCategory!.id);
+
+      if (cachedProducts != null) {
+        setCachedProductsBasedOnCategory(
+          products: cachedProducts,
+        );
+      } else {
+        getProducts();
+      }
+    }
+
+    emit(ChangeSelectedCategoryState());
   }
 
   BannersModel? bannersModel;
@@ -103,15 +131,15 @@ class HomeCubit extends Cubit<HomeStates> {
     );
 
     result.fold(
-          (l) {
-            debugPrint('GetBannersErrorState => $l');
+      (l) {
+        debugPrint('GetBannersErrorState => $l');
         emit(
           GetBannersErrorState(
             error: l,
           ),
         );
       },
-          (r) {
+      (r) {
         bannersModel = BannersModel.fromMap(r);
 
         debugPrint(
@@ -124,15 +152,71 @@ class HomeCubit extends Cubit<HomeStates> {
       },
     );
   }
+
+  ProductsModel? productsModel;
+
+  void getProducts() async {
+    productsModel = null;
+
+    emit(GetProductsLoadingState());
+
+    final result = await DioHelper.get(
+      path: '$productsEndpoint${_selectedCategory!.id}',
+    );
+
+    result.fold(
+      (l) {
+        debugPrint('GetProductsErrorState => $l');
+        emit(
+          GetProductsErrorState(
+            error: l,
+          ),
+        );
+      },
+      (r) {
+        productsModel = ProductsModel.fromMap(r);
+
+        cacheProducts(
+          categoryId: _selectedCategory!.id,
+          products: productsModel!,
+        );
+
+        debugPrint(
+          'productsModel fetched successfully => ${productsModel!.products.length} products',
+        );
+
+        emit(
+          GetProductsSuccessState(),
+        );
+      },
+    );
+  }
+
+  Map<int, ProductsModel> productsCache = {};
+
+  ProductsModel? getProductsByCategoryId(int categoryId) {
+    if (productsCache.containsKey(categoryId)) {
+      return productsCache[categoryId];
+    } else {
+      return null;
+    }
+  }
+
+  void cacheProducts({
+    required int categoryId,
+    required ProductsModel products,
+  }) {
+    productsCache[categoryId] = products;
+  }
+
+  void setCachedProductsBasedOnCategory({
+    required ProductsModel products,
+  }) {
+    productsModel = null;
+    productsModel = products;
+
+    emit(
+      GetProductsSuccessState(),
+    );
+  }
 }
-
-
-
-
-
-
-
-
-
-
-

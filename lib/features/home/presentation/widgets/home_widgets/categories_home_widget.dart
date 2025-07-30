@@ -49,32 +49,69 @@ class _CategoriesHomeWidgetState extends State<CategoriesHomeWidget> {
               ...homeCubit.categoriesModel!.categories.asMap().map((index, value) {
                 return MapEntry(
                   index,
-                  SizedBox(
-                    width: 100,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 70.0,
-                          height: 70.0,
-                          decoration: BoxDecoration(
-                            color: ColorsManager.primaryColor.withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: NetworkImage(value.image),
-                              fit: BoxFit.cover,
-                            ),
+                  Column(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          homeCubit.selectedCategory = value;
+                        },
+                        highlightColor: ColorsManager.transparent,
+                        splashColor: ColorsManager.transparent,
+                        child: SizedBox(
+                          width: 100,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 60.0,
+                                height: 60.0,
+                                decoration: BoxDecoration(
+                                  color: ColorsManager.transparent,
+                                  image: DecorationImage(
+                                    image: NetworkImage(value.image),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              verticalSpace10,
+                              BlocBuilder<HomeCubit, HomeStates>(
+                                buildWhen: (prev, current) {
+                                  return current is ChangeSelectedCategoryState;
+                                },
+                                builder: (context, state) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        value.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStylesManager.regular16.copyWith(
+                                          color: homeCubit.selectedCategory!.id == value.id
+                                              ? ColorsManager.primaryColor
+                                              : null,
+                                        ),
+                                      ),
+                                      verticalSpace4,
+                                      Container(
+                                        width: 60.0,
+                                        height: 4.0,
+                                        decoration: BoxDecoration(
+                                          color: homeCubit.selectedCategory!.id == value.id
+                                              ? ColorsManager.primaryColor
+                                              : ColorsManager.transparent,
+                                          borderRadius: BorderRadius.circular(2.0),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ],
                           ),
                         ),
-                        verticalSpace10,
-                        Text(
-                          value.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStylesManager.regular16,
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 );
               }).values,
