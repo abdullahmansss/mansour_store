@@ -1,4 +1,4 @@
-import 'package:mansour_store/features/home/data/product_model.dart';
+import 'package:mansour_store/core/models/product_model.dart';
 
 class BannerModel {
   final int id;

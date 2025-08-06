@@ -1,11 +1,10 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mansour_store/core/theme/colors.dart';
 import 'package:mansour_store/core/theme/text_styles.dart';
 import 'package:mansour_store/core/util/constants/spacing.dart';
-import 'package:mansour_store/features/home/presentation/logic/home_cubit.dart';
-import 'package:mansour_store/features/home/presentation/logic/home_states.dart';
+import 'package:mansour_store/core/util/cubit/home_cubit.dart';
+import 'package:mansour_store/core/util/cubit/home_states.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class CategoriesHomeWidget extends StatefulWidget {

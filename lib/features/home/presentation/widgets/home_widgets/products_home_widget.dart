@@ -1,13 +1,14 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:mansour_store/core/theme/colors.dart';
 import 'package:mansour_store/core/theme/text_styles.dart';
+import 'package:mansour_store/core/util/constants/routes.dart';
 import 'package:mansour_store/core/util/constants/spacing.dart';
-import 'package:mansour_store/features/home/data/product_model.dart';
-import 'package:mansour_store/features/home/presentation/logic/home_cubit.dart';
-import 'package:mansour_store/features/home/presentation/logic/home_states.dart';
+import 'package:mansour_store/core/util/extensions/context_extension.dart';
+import 'package:mansour_store/core/models/product_model.dart';
+import 'package:mansour_store/core/util/cubit/home_cubit.dart';
+import 'package:mansour_store/core/util/cubit/home_states.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ProductsHomeWidget extends StatefulWidget {
@@ -62,118 +63,128 @@ class _ProductsHomeWidgetState extends State<ProductsHomeWidget> {
             itemBuilder: (context, index) {
               ProductModel product = homeCubit.productsModel!.products[index];
 
-              return Container(
-                decoration: BoxDecoration(
-                  color: ColorsManager.whiteColor,
-                  borderRadius: BorderRadius.circular(10.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: ColorsManager.blackColor.withValues(
-                        alpha: 0.1,
+              return InkWell(
+                onTap: () {
+                  homeCubit.getProductDetails(
+                    productId: product.id ?? 0,
+                  );
+
+                  context.push(Routes.productDetailsScreen);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ColorsManager.whiteColor,
+                    borderRadius: BorderRadius.circular(10.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: ColorsManager.blackColor.withValues(
+                          alpha: 0.1,
+                        ),
+                        blurRadius: 10.0,
+                        offset: const Offset(0, 10),
                       ),
-                      blurRadius: 10.0,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Image.network(
-                              width: double.infinity,
-                              product.image ?? '',
+                    ],
+                  ),
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Image.network(
+                                width: double.infinity,
+                                product.image ?? '',
+                              ),
+                            ),
+                            verticalSpace16,
+                            Text(
+                              product.name ?? 'No Name Found',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStylesManager.medium14,
+                            ),
+                            verticalSpace16,
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '\$${NumberFormat('#,##0').format(double.parse(product.effectivePrice ?? '0'))}',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStylesManager.bold16.copyWith(
+                                        color: ColorsManager.blackColor,
+                                      ),
+                                    ),
+                                    verticalSpace4,
+                                    Text(
+                                      (product.isOnSale ?? false) ? '\$${NumberFormat('#,##0').format(double.parse(product.price ?? '0'))}' : '',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStylesManager.regular12.copyWith(
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                    verticalSpace4,
+                                    if ((product.stockQuantity ?? 0) > 0)
+                                      Text(
+                                        'In Stock',
+                                        style: TextStylesManager.regular14.copyWith(
+                                          color: ColorsManager.primaryColor,
+                                        ),
+                                      ),
+                                    if ((product.stockQuantity ?? 0) == 0)
+                                      Text(
+                                        'Out of Stock',
+                                        style: TextStylesManager.regular14.copyWith(
+                                          color: ColorsManager.errorColor,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                Spacer(),
+                                FloatingActionButton(
+                                  heroTag: 'addToCartButton$index',
+                                  elevation: 0.0,
+                                  mini: true,
+                                  onPressed: () {},
+                                  backgroundColor: ColorsManager.primaryColor,
+                                  child: Icon(
+                                    Icons.add,
+                                    color: ColorsManager.whiteColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (product.isOnSale ?? false)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: ColorsManager.primaryColor,
+                            borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(10.0),
                             ),
                           ),
-                          verticalSpace16,
-                          Text(
-                            product.name ?? 'No Name Found',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStylesManager.medium14,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 4.0,
                           ),
-                          verticalSpace16,
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '\$${NumberFormat('#,##0').format(double.parse(product.effectivePrice ?? '0'))}',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStylesManager.bold16.copyWith(
-                                      color: ColorsManager.blackColor,
-                                    ),
-                                  ),
-                                  verticalSpace4,
-                                  Text(
-                                    (product.isOnSale ?? false) ? '\$${NumberFormat('#,##0').format(double.parse(product.price ?? '0'))}' : '',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStylesManager.regular12.copyWith(
-                                      decoration: TextDecoration.lineThrough,
-                                    ),
-                                  ),
-                                  verticalSpace4,
-                                  if ((product.stockQuantity ?? 0) > 0)
-                                    Text(
-                                      'In Stock',
-                                      style: TextStylesManager.regular14.copyWith(
-                                        color: ColorsManager.primaryColor,
-                                      ),
-                                    ),
-                                  if ((product.stockQuantity ?? 0) == 0)
-                                    Text(
-                                      'Out of Stock',
-                                      style: TextStylesManager.regular14.copyWith(
-                                        color: ColorsManager.errorColor,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              Spacer(),
-                              FloatingActionButton(
-                                elevation: 0.0,
-                                mini: true,
-                                onPressed: () {},
-                                backgroundColor: ColorsManager.primaryColor,
-                                child: Icon(
-                                  Icons.add,
-                                  color: ColorsManager.whiteColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (product.isOnSale ?? false)
-                      Container(
-                        decoration: BoxDecoration(
-                          color: ColorsManager.primaryColor,
-                          borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(10.0),
+                          child: Text(
+                            'On Sale',
+                            style: TextStylesManager.regular12.copyWith(
+                              color: ColorsManager.whiteColor,
+                            ),
                           ),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 4.0,
-                        ),
-                        child: Text(
-                          'On Sale',
-                          style: TextStylesManager.regular12.copyWith(
-                            color: ColorsManager.whiteColor,
-                          ),
-                        ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },

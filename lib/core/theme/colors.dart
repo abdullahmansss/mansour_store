@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mansour_store/features/home/presentation/logic/home_cubit.dart';
+import 'package:mansour_store/core/util/cubit/home_cubit.dart';
 
 class ColorsManager {
   static Color get primaryColor => Color(0xFF009688);

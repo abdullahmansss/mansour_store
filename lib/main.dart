@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mansour_store/core/network/remote/dio_helper.dart';
 import 'package:mansour_store/core/theme/theme.dart';
 import 'package:mansour_store/core/util/constants/routes.dart';
-import 'package:mansour_store/features/home/presentation/logic/home_cubit.dart';
-import 'package:mansour_store/features/home/presentation/logic/home_states.dart';
+import 'package:mansour_store/core/util/cubit/home_cubit.dart';
+import 'package:mansour_store/core/util/cubit/home_states.dart';
 
 import 'core/util/constants/bloc_observer.dart';
 

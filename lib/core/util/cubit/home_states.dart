@@ -24,6 +24,30 @@ class GetTopHeadlinesErrorState extends HomeStates {
 
 class GetTopHeadlinesSuccessState extends HomeStates {}
 
+class GetBrandsLoadingState extends HomeStates {}
+
+class GetBrandsErrorState extends HomeStates {
+  final String error;
+
+  GetBrandsErrorState({
+    required this.error,
+  });
+}
+
+class GetBrandsSuccessState extends HomeStates {}
+
+class GetProductDetailsLoadingState extends HomeStates {}
+
+class GetProductDetailsErrorState extends HomeStates {
+  final String error;
+
+  GetProductDetailsErrorState({
+    required this.error,
+  });
+}
+
+class GetProductDetailsSuccessState extends HomeStates {}
+
 class GetProductsLoadingState extends HomeStates {}
 
 class GetProductsErrorState extends HomeStates {

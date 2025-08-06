@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mansour_store/core/theme/colors.dart';
 import 'package:mansour_store/core/theme/text_styles.dart';
-import 'package:mansour_store/features/home/presentation/logic/home_cubit.dart';
-import 'package:mansour_store/features/home/presentation/logic/home_states.dart';
+import 'package:mansour_store/core/util/cubit/home_cubit.dart';
+import 'package:mansour_store/core/util/cubit/home_states.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: ColorsManager.scaffoldBackgroundColor,
-          appBar: AppBar(
+          appBar: homeCubit.currentIndex != 1 ? AppBar(
             title: Text(
               homeCubit.titles[homeCubit.currentIndex],
               style: TextStylesManager.medium18,
@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
             centerTitle: true,
             backgroundColor: ColorsManager.scaffoldBackgroundColor,
-          ),
+          ) : null,
           body: homeCubit.pages[homeCubit.currentIndex],
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
