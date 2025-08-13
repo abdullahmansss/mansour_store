@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mansour_store/core/models/base_model.dart';
 import 'package:mansour_store/core/models/product_model.dart';
 import 'package:mansour_store/core/network/remote/api_endpoints.dart';
 import 'package:mansour_store/core/network/remote/dio_helper.dart';
+import 'package:mansour_store/features/addresses/data/addresses_model.dart';
 import 'package:mansour_store/features/home/data/banners_model.dart';
 import 'package:mansour_store/features/home/data/brands_model.dart';
 import 'package:mansour_store/features/home/data/categories_model.dart';
@@ -13,8 +17,10 @@ import 'package:mansour_store/features/home/presentation/widgets/cart_widget.dar
 import 'package:mansour_store/features/home/presentation/widgets/explore_widget.dart';
 import 'package:mansour_store/features/home/presentation/widgets/home_widget.dart';
 import 'package:mansour_store/features/home/presentation/widgets/profile_widget.dart';
+import 'package:mansour_store/features/login/data/login_model.dart';
 import 'package:mansour_store/features/product_details/data/product_details_model.dart';
 import 'package:mansour_store/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 HomeCubit homeCubit = HomeCubit.get(navigatorKey.currentContext!);
 
@@ -76,6 +82,7 @@ class HomeCubit extends Cubit<HomeStates> {
 
     final result = await DioHelper.get(
       path: categoriesEndpoint,
+      token: token,
     );
 
     result.fold(
@@ -139,6 +146,7 @@ class HomeCubit extends Cubit<HomeStates> {
 
     final result = await DioHelper.get(
       path: bannersEndpoint,
+      token: token,
     );
 
     result.fold(
@@ -173,6 +181,7 @@ class HomeCubit extends Cubit<HomeStates> {
 
     final result = await DioHelper.get(
       path: '$productsEndpoint${_selectedCategory!.id}',
+      token: token,
     );
 
     result.fold(
@@ -218,6 +227,7 @@ class HomeCubit extends Cubit<HomeStates> {
 
     final result = await DioHelper.get(
       path: '$productDetailsEndpoint$productId',
+      token: token,
     );
 
     result.fold(
@@ -248,6 +258,7 @@ class HomeCubit extends Cubit<HomeStates> {
 
     final result = await DioHelper.get(
       path: brandsEndpoint,
+      token: token,
     );
 
     result.fold(
@@ -294,6 +305,257 @@ class HomeCubit extends Cubit<HomeStates> {
 
     emit(
       GetProductsSuccessState(),
+    );
+  }
+
+  LoginModel? loginModel;
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  void loginUser() async {
+    loginModel = null;
+
+    emit(LoginUserLoadingState());
+
+    final result = await DioHelper.post(
+      path: loginEndpoint,
+      data: {
+        'email': emailController.text,
+        'password': passwordController.text,
+      },
+      token: token,
+    );
+
+    result.fold(
+      (l) {
+        debugPrint('LoginUserErrorState => $l');
+        emit(
+          LoginUserErrorState(
+            error: l,
+          ),
+        );
+      },
+      (r) {
+        loginModel = LoginModel.fromMap(r);
+        token = loginModel!.token;
+
+        saveTokenToSharedPreferences(
+          token: _token,
+        );
+
+        debugPrint(
+          'LoginUserSuccessState => ${loginModel!.token} logged in successfully',
+        );
+
+        emit(
+          LoginUserSuccessState(),
+        );
+      },
+    );
+  }
+
+  void saveTokenToSharedPreferences({
+    required String token,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
+  }
+
+  void loadTokenFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    debugPrint('Token loaded from SharedPreferences => $_token');
+    emit(TokenChangedState());
+  }
+
+  String _token = '';
+
+  String get token => _token;
+
+  set token(String value) {
+    _token = value;
+    emit(TokenChangedState());
+  }
+
+  GoogleMapController? _mapsController;
+
+  GoogleMapController? get mapsController => _mapsController;
+
+  set mapsController(GoogleMapController? value) {
+    _mapsController = value;
+    emit(MapControllerChangedState());
+  }
+
+  Marker _marker = Marker(
+    markerId: MarkerId('current_location'),
+    position: LatLng(30.163656, 31.625738),
+    draggable: true,
+    icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+    onDragStart: (LatLng position) {
+      debugPrint('Marker dragged to: ${position.latitude}, ${position.longitude}');
+    },
+    infoWindow: InfoWindow(title: 'Current Location'),
+  );
+
+  Marker get marker => _marker;
+
+  set marker(Marker value) {
+    _marker = value;
+    emit(ChangeMarkerState());
+  }
+
+  TextEditingController addressController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
+  TextEditingController stateController = TextEditingController();
+  TextEditingController countryController = TextEditingController();
+  TextEditingController zipCodeController = TextEditingController();
+
+  void getAddress() async {
+    emit(GetAddressLoadingState());
+
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      marker.position.latitude,
+      marker.position.longitude,
+    );
+
+    if (placemarks.isNotEmpty) {
+      Placemark placemark = placemarks.first;
+      String address = '${placemark.street}, ${placemark.locality}, ${placemark.country}';
+      addressController.text = address;
+      debugPrint('Address fetched: $address');
+    } else {
+      addressController.text = 'No address found';
+    }
+
+    emit(GetAddressSuccessState());
+  }
+
+  bool _isDefaultAddress = false;
+
+  bool get isDefaultAddress => _isDefaultAddress;
+
+  set isDefaultAddress(bool value) {
+    _isDefaultAddress = value;
+    emit(ChangeIsDefaultAddressState());
+  }
+
+  BaseModel? createAddressModel;
+
+  void createNewAddress() async {
+    createAddressModel = null;
+
+    emit(CreateNewAddressLoadingState());
+
+    final result = await DioHelper.post(
+      path: addressesEndpoint,
+      data: {
+        'type': 'shipping',
+        'address_line_1': addressController.text,
+        'first_name': firstNameController.text,
+        'last_name': lastNameController.text,
+        'city': cityController.text,
+        'state': stateController.text,
+        'country': countryController.text,
+        'postal_code': zipCodeController.text,
+        'is_default': isDefaultAddress,
+      },
+      token: token,
+    );
+
+    result.fold(
+      (l) {
+        debugPrint('CreateNewAddressErrorState => $l');
+        emit(
+          CreateNewAddressErrorState(
+            error: l,
+          ),
+        );
+      },
+      (r) {
+        createAddressModel = BaseModel.fromMap(r);
+
+        getAddresses();
+
+        addressController.clear();
+        firstNameController.clear();
+        lastNameController.clear();
+        cityController.clear();
+        stateController.clear();
+        countryController.clear();
+        zipCodeController.clear();
+        isDefaultAddress = false;
+
+        emit(
+          CreateNewAddressSuccessState(),
+        );
+      },
+    );
+  }
+
+  AddressesModel? addressesModel;
+
+  void getAddresses() async {
+    addressesModel = null;
+
+    emit(GetAllAddressesLoadingState());
+
+    final result = await DioHelper.get(
+      path: addressesEndpoint,
+      token: token,
+    );
+
+    result.fold(
+      (l) {
+        emit(
+          GetAllAddressesErrorState(
+            error: l,
+          ),
+        );
+      },
+      (r) {
+        addressesModel = AddressesModel.fromMap(r);
+
+        emit(
+          GetAllAddressesSuccessState(),
+        );
+      },
+    );
+  }
+
+  BaseModel? defaultAddressModel;
+
+  void setDefaultAddress({
+    required String addressId,
+  }) async {
+    defaultAddressModel = null;
+
+    emit(GetAllAddressesLoadingState());
+
+    final result = await DioHelper.patch(
+      path: setDefaultAddressEndpoint.replaceAll('ADDRESS_ID', addressId),
+      token: token,
+    );
+
+    result.fold(
+      (l) {
+        emit(
+          SetDefaultAddressErrorState(
+            error: l,
+          ),
+        );
+      },
+      (r) {
+        defaultAddressModel = BaseModel.fromMap(r);
+
+        getAddresses();
+
+        emit(
+          SetDefaultAddressSuccessState(),
+        );
+      },
     );
   }
 }

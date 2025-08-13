@@ -57,10 +57,23 @@ class ProductModel {
       stockQuantity: map['stock_quantity'] as int?,
       // inStock: map['in_stock'] as bool?,
       image: map['image'] as String?,
-      weight: map['weight'] as String?,
-      length: map['dimensions'] != null ? (map['dimensions']['length'] as String?) : '0',
-      width: map['dimensions'] != null ? (map['dimensions']['width'] as String?) : '0',
-      height: map['dimensions'] != null ? (map['dimensions']['height'] as String?) : '0',
+      weight: map['weight'].runtimeType != String ? map['weight'].toString() : map['weight'] as String?,
+      length: map['dimensions'] != null ?
+      map['dimensions']['length'].runtimeType != String ?
+          (map['dimensions']['length'] as num?)?.toString()
+          :
+      (map['dimensions']['length'] as String?)
+          : '0',
+      width: map['dimensions'] != null ?
+      map['dimensions']['width'].runtimeType != String ?
+          (map['dimensions']['width'] as num?)?.toString()
+          :
+      (map['dimensions']['width'] as String?) : '0',
+      height: map['dimensions'] != null ?
+      map['dimensions']['height'].runtimeType != String ?
+          (map['dimensions']['height'] as num?)?.toString()
+          :
+      (map['dimensions']['height'] as String?) : '0',
       createdAt: map['created_at'] as String?,
       updatedAt: map['updated_at'] as String?,
     );

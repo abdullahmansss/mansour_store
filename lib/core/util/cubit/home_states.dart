@@ -24,6 +24,66 @@ class GetTopHeadlinesErrorState extends HomeStates {
 
 class GetTopHeadlinesSuccessState extends HomeStates {}
 
+class SetDefaultAddressLoadingState extends HomeStates {}
+
+class SetDefaultAddressErrorState extends HomeStates {
+  final String error;
+
+  SetDefaultAddressErrorState({
+    required this.error,
+  });
+}
+
+class SetDefaultAddressSuccessState extends HomeStates {}
+
+class GetAllAddressesLoadingState extends HomeStates {}
+
+class GetAllAddressesErrorState extends HomeStates {
+  final String error;
+
+  GetAllAddressesErrorState({
+    required this.error,
+  });
+}
+
+class GetAllAddressesSuccessState extends HomeStates {}
+
+class CreateNewAddressLoadingState extends HomeStates {}
+
+class CreateNewAddressErrorState extends HomeStates {
+  final String error;
+
+  CreateNewAddressErrorState({
+    required this.error,
+  });
+}
+
+class CreateNewAddressSuccessState extends HomeStates {}
+
+class LoginUserLoadingState extends HomeStates {}
+
+class LoginUserErrorState extends HomeStates {
+  final String error;
+
+  LoginUserErrorState({
+    required this.error,
+  });
+}
+
+class LoginUserSuccessState extends HomeStates {}
+
+class ChangeIsDefaultAddressState extends HomeStates {}
+
+class GetAddressLoadingState extends HomeStates {}
+
+class GetAddressSuccessState extends HomeStates {}
+
+class ChangeMarkerState extends HomeStates {}
+
+class MapControllerChangedState extends HomeStates {}
+
+class TokenChangedState extends HomeStates {}
+
 class GetBrandsLoadingState extends HomeStates {}
 
 class GetBrandsErrorState extends HomeStates {

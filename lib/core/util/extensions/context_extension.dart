@@ -13,6 +13,9 @@ extension NavigationExtension on BuildContext {
 
   void get pop => Navigator.pop(this);
 
+  void popUntil(String routeName) =>
+      Navigator.popUntil(this, ModalRoute.withName(routeName));
+
   ARG? getArg<ARG>() {
     return (ModalRoute.of(this)?.settings.arguments as ARG?)!;
   }

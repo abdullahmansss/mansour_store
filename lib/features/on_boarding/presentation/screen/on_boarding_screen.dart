@@ -7,6 +7,7 @@ import 'package:mansour_store/core/util/constants/primary/primary_padding.dart';
 import 'package:mansour_store/core/util/constants/routes.dart';
 import 'package:mansour_store/core/util/constants/spacing.dart';
 import 'package:mansour_store/core/util/extensions/context_extension.dart';
+import 'package:mansour_store/features/home/data/brand_model.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
@@ -130,7 +131,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   Spacer(),
                   IconButton(
                     onPressed: () {
-                      if(currentPageIndex < onBoardingItems.length - 1) {
+                      if (currentPageIndex < onBoardingItems.length - 1) {
                         setState(() {
                           pageController.nextPage(
                             duration: const Duration(milliseconds: 300),
@@ -139,7 +140,19 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                           currentPageIndex++;
                         });
                       } else {
-                        context.push(Routes.homeScreen);
+                        context.push(
+                          Routes.homeScreen,
+                          // arguments: BrandModel(
+                          //   id: 0,
+                          //   name: 'Helloooooooooooo',
+                          //   logo: '',
+                          //   createdAt: '',
+                          //   updatedAt: '',
+                          //   isActive: true,
+                          //   slug: 'all-brands',
+                          //   description: 'Explore all brands available in Mansour Store',
+                          // ),
+                        );
                       }
                     },
                     style: IconButton.styleFrom(

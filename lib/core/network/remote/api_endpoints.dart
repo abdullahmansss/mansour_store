@@ -6,3 +6,6 @@ const String bannersEndpoint = 'banners';
 const String productsEndpoint = 'categories/';
 const String productDetailsEndpoint = 'products/';
 const String brandsEndpoint = 'brands';
+const String loginEndpoint = 'auth/login';
+const String addressesEndpoint = 'addresses';
+const String setDefaultAddressEndpoint = 'addresses/ADDRESS_ID/set-default';

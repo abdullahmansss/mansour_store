@@ -56,6 +56,7 @@ class DioHelper {
     required String path,
     Map<String, dynamic>? params,
     String? search,
+    required String token,
   }) async {
     // will be some logic here before call get method directly from dio package
     try {
@@ -67,7 +68,88 @@ class DioHelper {
         },
         options: Options(
           headers: {
-            'Authorization': 'Bearer $apiKey',
+            if(token.isNotEmpty)
+              'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      return Right(response.data);
+    } on DioException catch (e) {
+      debugPrint('DioHelper.get DioException: ${e.response!.data}');
+      if(e.response != null) {
+        debugPrint('not equal null');
+        if(e.response!.statusCode != 404) {
+          debugPrint('response is Map');
+          if(e.response?.data['message'] != null) {
+            return Left(e.response?.data['message'] ?? 'something went wrong, please try again later');
+          }
+        }
+      }
+
+      return Left('something went wrong, please try again later');
+    } catch (e) {
+      debugPrint('DioHelper.get error: $e');
+      return Left('something went wrong, please try again later');
+    }
+  }
+
+  static Future<Either<String, Map<String, dynamic>>> patch({
+    required String path,
+    Map<String, dynamic>? params,
+    String? search,
+    required String token,
+  }) async {
+    // will be some logic here before call get method directly from dio package
+    try {
+      Response response = await getDio().patch(
+        path,
+        queryParameters: {
+          if(search != null) 'q': search,
+          ...?params,
+        },
+        options: Options(
+          headers: {
+            if(token.isNotEmpty)
+              'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      return Right(response.data);
+    } on DioException catch (e) {
+      debugPrint('DioHelper.get DioException: ${e.response!.data}');
+      if(e.response != null) {
+        debugPrint('not equal null');
+        if(e.response!.statusCode != 404) {
+          debugPrint('response is Map');
+          if(e.response?.data['message'] != null) {
+            return Left(e.response?.data['message'] ?? 'something went wrong, please try again later');
+          }
+        }
+      }
+
+      return Left('something went wrong, please try again later');
+    } catch (e) {
+      debugPrint('DioHelper.get error: $e');
+      return Left('something went wrong, please try again later');
+    }
+  }
+
+  static Future<Either<String, Map<String, dynamic>>> post({
+    required String path,
+    Map<String, dynamic>? data,
+    required String token,
+  }) async {
+    // will be some logic here before call get method directly from dio package
+    try {
+      Response response = await getDio().post(
+        path,
+        data: data,
+        options: Options(
+          headers: {
+            if(token.isNotEmpty)
+              'Authorization': 'Bearer $token',
           },
         ),
       );
@@ -92,6 +174,21 @@ class DioHelper {
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
