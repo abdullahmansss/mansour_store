@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mansour_store/features/addresses/presentation/screen/addresses_screen.dart';
+import 'package:mansour_store/features/cart/presentation/screen/cart_screen.dart';
 import 'package:mansour_store/features/create_address/presentation/screen/create_address_screen.dart';
 import 'package:mansour_store/features/home/presentation/screen/home_screen.dart';
 import 'package:mansour_store/features/login/presentation/screen/login_screen.dart';
@@ -17,6 +18,7 @@ class Routes {
   static const String addressesScreen = '/addressesScreen';
   static const String mapScreen = '/mapScreen';
   static const String createAddressScreen = '/createAddressScreen';
+  static const String cartScreen = '/cartScreen';
 
   static Map<String, WidgetBuilder> get routes => {
     splashScreen: (context) => const SplashScreen(),
@@ -27,5 +29,6 @@ class Routes {
     addressesScreen: (context) => const AddressesScreen(),
     mapScreen: (context) => const MapScreen(),
     createAddressScreen: (context) => const CreateAddressScreen(),
+    cartScreen: (context) => const CartScreen(),
   };
 }

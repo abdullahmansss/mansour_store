@@ -156,7 +156,7 @@ class _ExploreWidgetState extends State<ExploreWidget> with SingleTickerProvider
                         color: Colors.grey.shade400,
                         thickness: 0.5,
                       ),
-                      itemCount: homeCubit.categoriesModel!.categories.length,
+                      itemCount: homeCubit.brandsModel!.brands.length,
                     );
                   },
                 ),

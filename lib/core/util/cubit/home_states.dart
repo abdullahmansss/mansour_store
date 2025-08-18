@@ -36,6 +36,42 @@ class SetDefaultAddressErrorState extends HomeStates {
 
 class SetDefaultAddressSuccessState extends HomeStates {}
 
+class DeleteCartItemLoadingState extends HomeStates {}
+
+class DeleteCartItemErrorState extends HomeStates {
+  final String error;
+
+  DeleteCartItemErrorState({
+    required this.error,
+  });
+}
+
+class DeleteCartItemSuccessState extends HomeStates {}
+
+class AddItemToCartLoadingState extends HomeStates {}
+
+class AddItemToCartErrorState extends HomeStates {
+  final String error;
+
+  AddItemToCartErrorState({
+    required this.error,
+  });
+}
+
+class AddItemToCartSuccessState extends HomeStates {}
+
+class GetCartLoadingState extends HomeStates {}
+
+class GetCartErrorState extends HomeStates {
+  final String error;
+
+  GetCartErrorState({
+    required this.error,
+  });
+}
+
+class GetCartSuccessState extends HomeStates {}
+
 class GetAllAddressesLoadingState extends HomeStates {}
 
 class GetAllAddressesErrorState extends HomeStates {

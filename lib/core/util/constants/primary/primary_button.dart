@@ -7,12 +7,16 @@ class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isLoading;
   final String text;
+  final Color backgroundColor;
+  final Color textColor;
 
   const PrimaryButton({
     super.key,
     required this.onPressed,
     required this.isLoading,
     required this.text,
+    this.backgroundColor = ColorsManager.primaryColor,
+    this.textColor = ColorsManager.whiteColor,
   });
 
   @override
@@ -22,7 +26,7 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: ColorsManager.primaryColor,
+          backgroundColor: backgroundColor,
           padding: const EdgeInsets.symmetric(
             vertical: 16.0,
           ),
@@ -32,13 +36,13 @@ class PrimaryButton extends StatelessWidget {
         ),
         child: isLoading
             ? CupertinoActivityIndicator(
-                color: ColorsManager.whiteColor,
+                color: textColor,
                 radius: 12.0,
               )
             : Text(
                 text,
                 style: TextStylesManager.bold16.copyWith(
-                  color: ColorsManager.whiteColor,
+                  color: textColor,
                 ),
               ),
       ),

@@ -7,6 +7,7 @@ import 'package:mansour_store/core/models/product_model.dart';
 import 'package:mansour_store/core/network/remote/api_endpoints.dart';
 import 'package:mansour_store/core/network/remote/dio_helper.dart';
 import 'package:mansour_store/features/addresses/data/addresses_model.dart';
+import 'package:mansour_store/features/cart/data/cart_model.dart';
 import 'package:mansour_store/features/home/data/banners_model.dart';
 import 'package:mansour_store/features/home/data/brands_model.dart';
 import 'package:mansour_store/features/home/data/categories_model.dart';
@@ -242,6 +243,12 @@ class HomeCubit extends Cubit<HomeStates> {
       (r) {
         productDetailsModel = ProductDetailsModel.fromMap(r);
 
+        bool a = cartModel!.data.items.any((item) => item.productId == productDetails.id);
+
+        debugPrint(
+          'Product details fetched successfully => ${a}',
+        );
+
         emit(
           GetProductDetailsSuccessState(),
         );
@@ -366,6 +373,9 @@ class HomeCubit extends Cubit<HomeStates> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token') ?? '';
     debugPrint('Token loaded from SharedPreferences => $_token');
+
+    getUserCart();
+
     emit(TokenChangedState());
   }
 
@@ -555,6 +565,139 @@ class HomeCubit extends Cubit<HomeStates> {
         emit(
           SetDefaultAddressSuccessState(),
         );
+      },
+    );
+  }
+
+  CartModel? cartModel;
+
+  void getUserCart() async {
+    if (token.isEmpty) {
+      debugPrint('Token is empty, cannot fetch cart');
+      return;
+    }
+
+    emit(GetCartLoadingState());
+
+    final result = await DioHelper.get(
+      path: getCartEndpoint,
+      token: token,
+    );
+
+    result.fold(
+      (l) {
+        emit(
+          GetCartErrorState(
+            error: l,
+          ),
+        );
+      },
+      (r) {
+        cartModel = CartModel.fromMap(r);
+
+        emit(
+          GetCartSuccessState(),
+        );
+      },
+    );
+  }
+
+  BaseModel? addItemToCartModel;
+
+  void addItemToCart() async {
+    addItemToCartModel = null;
+
+    emit(AddItemToCartLoadingState());
+
+    final result = await DioHelper.post(
+      path: getCartEndpoint,
+      token: token,
+      data: {
+        'product_id': productDetails.id,
+        'quantity': 1, // Default quantity is 1
+      },
+    );
+
+    result.fold(
+      (l) {
+        emit(
+          AddItemToCartErrorState(
+            error: l,
+          ),
+        );
+      },
+      (r) {
+        addItemToCartModel = BaseModel.fromMap(r);
+
+        getUserCart();
+
+        // emit(
+        //   AddItemToCartSuccessState(),
+        // );
+      },
+    );
+  }
+
+  BaseModel? updateCartQuantityModel;
+
+  void updateCartQuantity({
+    required int itemId,
+    required int quantity,
+  }) async {
+    updateCartQuantityModel = null;
+
+    emit(AddItemToCartLoadingState());
+
+    final result = await DioHelper.put(
+      path: updateCartQuantityEndpoint.replaceAll('ITEM_ID', itemId.toString()),
+      token: token,
+      data: {
+        'quantity': quantity,
+      },
+    );
+
+    result.fold(
+      (l) {
+        emit(
+          AddItemToCartErrorState(
+            error: l,
+          ),
+        );
+      },
+      (r) {
+        updateCartQuantityModel = BaseModel.fromMap(r);
+
+        getUserCart();
+      },
+    );
+  }
+
+  BaseModel? deleteCartItemModel;
+
+  void deleteCartItem({
+    required int itemId,
+  }) async {
+    deleteCartItemModel = null;
+
+    emit(DeleteCartItemLoadingState());
+
+    final result = await DioHelper.delete(
+      path: updateCartQuantityEndpoint.replaceAll('ITEM_ID', itemId.toString()),
+      token: token,
+    );
+
+    result.fold(
+          (l) {
+        emit(
+          DeleteCartItemErrorState(
+            error: l,
+          ),
+        );
+      },
+          (r) {
+        deleteCartItemModel = BaseModel.fromMap(r);
+
+        getUserCart();
       },
     );
   }

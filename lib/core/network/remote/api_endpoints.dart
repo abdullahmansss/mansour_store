@@ -9,3 +9,7 @@ const String brandsEndpoint = 'brands';
 const String loginEndpoint = 'auth/login';
 const String addressesEndpoint = 'addresses';
 const String setDefaultAddressEndpoint = 'addresses/ADDRESS_ID/set-default';
+
+
+const String getCartEndpoint = 'cart';
+const String updateCartQuantityEndpoint = 'cart/items/ITEM_ID';

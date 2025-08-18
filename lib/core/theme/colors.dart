@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mansour_store/core/util/cubit/home_cubit.dart';
 
 class ColorsManager {
-  static Color get primaryColor => Color(0xFF009688);
+  static const Color primaryColor = Color(0xFF009688);
   static Color get primaryColor2 => homeCubit.isDark ? Color(0xFF000000) : Color(0xFF009688);
   static const Color primaryDarkColor = Color(0xFF000000);
   static const Color scaffoldBackgroundColor = Color(0xFFF5F5F5);

@@ -22,40 +22,47 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeStates>(
       buildWhen: (previous, current) {
-        return current is ChangeBottomNavBarState;
+        return current is ChangeBottomNavBarState ||
+               current is GetCartLoadingState ||
+               current is GetCartSuccessState ||
+               current is GetCartErrorState;
       },
       builder: (context, state) {
         return Scaffold(
           backgroundColor: ColorsManager.scaffoldBackgroundColor,
-          appBar: homeCubit.currentIndex != 1 ? AppBar(
-            title: Text(
-              homeCubit.titles[homeCubit.currentIndex],
-              style: TextStylesManager.medium18,
-            ),
-            leading: homeCubit.currentIndex == 0 ? IconButton(
-              icon: Icon(
-                Icons.menu,
-                color: ColorsManager.textColor,
-              ),
-              onPressed: () {
-                // Handle menu button press
-              },
-            ) : null,
-            actions: [
-              if(homeCubit.currentIndex == 0)
-                IconButton(
-                icon: Icon(
-                  Icons.notifications_none_outlined,
-                  color: ColorsManager.textColor,
-                ),
-                onPressed: () {
-                  // Handle notifications button press
-                },
-              ),
-            ],
-            centerTitle: true,
-            backgroundColor: ColorsManager.scaffoldBackgroundColor,
-          ) : null,
+          appBar: homeCubit.currentIndex != 1
+              ? AppBar(
+                  title: Text(
+                    homeCubit.titles[homeCubit.currentIndex],
+                    style: TextStylesManager.medium18,
+                  ),
+                  leading: homeCubit.currentIndex == 0
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.menu,
+                            color: ColorsManager.textColor,
+                          ),
+                          onPressed: () {
+                            // Handle menu button press
+                          },
+                        )
+                      : null,
+                  actions: [
+                    if (homeCubit.currentIndex == 0)
+                      IconButton(
+                        icon: Icon(
+                          Icons.notifications_none_outlined,
+                          color: ColorsManager.textColor,
+                        ),
+                        onPressed: () {
+                          // Handle notifications button press
+                        },
+                      ),
+                  ],
+                  centerTitle: true,
+                  backgroundColor: ColorsManager.scaffoldBackgroundColor,
+                )
+              : null,
           body: homeCubit.pages[homeCubit.currentIndex],
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
@@ -68,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
             unselectedLabelStyle: TextStylesManager.medium14.copyWith(
               height: 2.0,
             ),
-            items: const [
+            items: [
               BottomNavigationBarItem(
                 icon: Padding(
                   padding: EdgeInsets.only(
@@ -104,14 +111,36 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.only(
                     top: 8.0,
                   ),
-                  child: Icon(Icons.shopping_cart_outlined),
+                  child: Badge(
+                    isLabelVisible: homeCubit.cartModel?.data.items.fold(0, (previousValue, item) => previousValue + item.quantity) != 0,
+                    label: Text(
+                      homeCubit.cartModel?.data.items.fold(0, (previousValue, item) => previousValue + item.quantity).toString() ?? '0',
+                      style: TextStylesManager.bold12.copyWith(
+                        color: ColorsManager.whiteColor,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.shopping_cart_outlined,
+                    ),
+                  ),
                 ),
                 label: 'Cart',
                 activeIcon: Padding(
                   padding: EdgeInsets.only(
                     top: 8.0,
                   ),
-                  child: Icon(Icons.shopping_cart),
+                  child: Badge(
+                    isLabelVisible: homeCubit.cartModel?.data.items.fold(0, (previousValue, item) => previousValue + item.quantity) != 0,
+                    label: Text(
+                      homeCubit.cartModel?.data.items.fold(0, (previousValue, item) => previousValue + item.quantity).toString() ?? '0',
+                      style: TextStylesManager.bold12.copyWith(
+                        color: ColorsManager.whiteColor,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.shopping_cart,
+                    ),
+                  ),
                 ),
               ),
               BottomNavigationBarItem(
