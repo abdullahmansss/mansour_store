@@ -6,6 +6,8 @@ import 'package:mansour_store/features/home/presentation/screen/home_screen.dart
 import 'package:mansour_store/features/login/presentation/screen/login_screen.dart';
 import 'package:mansour_store/features/map/presentation/screen/map_screen.dart';
 import 'package:mansour_store/features/on_boarding/presentation/screen/on_boarding_screen.dart';
+import 'package:mansour_store/features/order_created/presentation/screen/order_created_screen.dart';
+import 'package:mansour_store/features/orders/presentation/screen/orders_screen.dart';
 import 'package:mansour_store/features/product_details/presentation/screen/product_details_screen.dart';
 import 'package:mansour_store/features/splash/presentation/screen/splash_screen.dart';
 
@@ -19,6 +21,8 @@ class Routes {
   static const String mapScreen = '/mapScreen';
   static const String createAddressScreen = '/createAddressScreen';
   static const String cartScreen = '/cartScreen';
+  static const String orderCreatedScreen = '/orderCreatedScreen';
+  static const String orderScreen = '/orderScreen';
 
   static Map<String, WidgetBuilder> get routes => {
     splashScreen: (context) => const SplashScreen(),
@@ -30,5 +34,7 @@ class Routes {
     mapScreen: (context) => const MapScreen(),
     createAddressScreen: (context) => const CreateAddressScreen(),
     cartScreen: (context) => const CartScreen(),
+    orderCreatedScreen: (context) => const OderCreatedScreen(),
+    orderScreen: (context) => const OrdersScreen(),
   };
 }

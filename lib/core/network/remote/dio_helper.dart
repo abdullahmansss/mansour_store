@@ -177,6 +177,9 @@ class DioHelper {
     Map<String, dynamic>? data,
     required String token,
   }) async {
+    debugPrint('DioHelper.post data: $data');
+    debugPrint('DioHelper.post token: $token');
+    debugPrint('DioHelper.post path: $path');
     // will be some logic here before call get method directly from dio package
     try {
       Response response = await getDio().post(

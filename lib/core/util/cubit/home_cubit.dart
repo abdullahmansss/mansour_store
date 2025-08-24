@@ -19,6 +19,7 @@ import 'package:mansour_store/features/home/presentation/widgets/explore_widget.
 import 'package:mansour_store/features/home/presentation/widgets/home_widget.dart';
 import 'package:mansour_store/features/home/presentation/widgets/profile_widget.dart';
 import 'package:mansour_store/features/login/data/login_model.dart';
+import 'package:mansour_store/features/orders/data/orders_model.dart';
 import 'package:mansour_store/features/product_details/data/product_details_model.dart';
 import 'package:mansour_store/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -687,17 +688,94 @@ class HomeCubit extends Cubit<HomeStates> {
     );
 
     result.fold(
-          (l) {
+      (l) {
         emit(
           DeleteCartItemErrorState(
             error: l,
           ),
         );
       },
-          (r) {
+      (r) {
         deleteCartItemModel = BaseModel.fromMap(r);
 
         getUserCart();
+      },
+    );
+  }
+
+  int _selectedAddressId = -1;
+
+  int get selectedAddressId => _selectedAddressId;
+
+  set selectedAddressId(int id) {
+    _selectedAddressId = id;
+    emit(ChangeSelectedAddressState());
+  }
+
+  BaseModel? createOrderModel;
+
+  void createOrder() async {
+    createOrderModel = null;
+
+    emit(CreateNewOrderLoadingState());
+
+
+
+    final result = await DioHelper.post(
+      path: ordersEndpoint,
+      token: token,
+      data: {
+        'shipping_address_id': _selectedAddressId,
+        'payment_method': 'card',
+        'mark_as_paid': 1,
+      },
+    );
+
+    result.fold(
+      (l) {
+        emit(
+          CreateNewOrderErrorState(
+            error: l,
+          ),
+        );
+      },
+      (r) {
+        createOrderModel = BaseModel.fromMap(r);
+        getUserCart();
+
+        emit(
+          CreateNewOrderSuccessState(),
+        );
+      },
+    );
+  }
+
+  OrdersModel? ordersModel;
+
+  void getOrders() async {
+    ordersModel = null;
+
+    emit(GetOrdersLoadingState());
+
+    final result = await DioHelper.get(
+      path: ordersEndpoint,
+      token: token,
+    );
+
+    result.fold(
+      (l) {
+        emit(
+          GetOrdersErrorState(
+            error: l,
+          ),
+        );
+      },
+      (r) {
+        ordersModel = OrdersModel.fromMap(r);
+
+        emit(
+          GetOrdersSuccessState(),
+        );
       },
     );
   }

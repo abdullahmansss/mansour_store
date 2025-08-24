@@ -46,18 +46,18 @@ class ProfileWidget extends StatelessWidget {
                     context.push(Routes.addressesScreen);
                   },
                 ),
-                ProfileItemWidget(
-                  icon: Icons.shopping_cart_outlined,
-                  text: 'Cart',
-                  onTap: () {
-
-                  },
-                ),
+                // ProfileItemWidget(
+                //   icon: Icons.shopping_cart_outlined,
+                //   text: 'Cart',
+                //   onTap: () {
+                //
+                //   },
+                // ),
                 ProfileItemWidget(
                   icon: Icons.shopping_bag_outlined,
                   text: 'Orders',
                   onTap: () {
-
+                    context.push(Routes.orderScreen);
                   },
                 ),
               ],

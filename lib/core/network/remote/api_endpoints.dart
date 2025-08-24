@@ -8,6 +8,7 @@ const String productDetailsEndpoint = 'products/';
 const String brandsEndpoint = 'brands';
 const String loginEndpoint = 'auth/login';
 const String addressesEndpoint = 'addresses';
+const String ordersEndpoint = 'orders';
 const String setDefaultAddressEndpoint = 'addresses/ADDRESS_ID/set-default';
 
 

@@ -13,31 +13,29 @@ import 'package:mansour_store/core/util/extensions/context_extension.dart';
 import 'package:mansour_store/features/addresses/data/address_model.dart';
 import 'package:mansour_store/features/addresses/presentation/widgets/address_item_widget.dart';
 import 'package:mansour_store/features/home/presentation/widgets/profile_widgets/profile_item_widget.dart';
+import 'package:mansour_store/features/orders/data/order_model.dart';
+import 'package:mansour_store/features/orders/presentation/widgets/order_item_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class AddressesScreen extends StatefulWidget {
-  const AddressesScreen({
+class OrdersScreen extends StatefulWidget {
+  const OrdersScreen({
     super.key,
   });
 
   @override
-  State<AddressesScreen> createState() => _AddressesScreenState();
+  State<OrdersScreen> createState() => _OrdersScreenState();
 }
 
-class _AddressesScreenState extends State<AddressesScreen> {
+class _OrdersScreenState extends State<OrdersScreen> {
   @override
   void initState() {
     super.initState();
 
-    homeCubit.getAddresses();
+    homeCubit.getOrders();
   }
-
-  bool isFromCheckout = false;
 
   @override
   Widget build(BuildContext context) {
-    isFromCheckout = ModalRoute.of(context)!.settings.arguments as bool? ?? false;
-
     return Scaffold(
       backgroundColor: ColorsManager.whiteColor,
       appBar: AppBar(
@@ -47,7 +45,6 @@ class _AddressesScreenState extends State<AddressesScreen> {
             color: ColorsManager.textColor,
           ),
           onPressed: () {
-            homeCubit.selectedAddressId = -1;
             context.pop;
           },
         ),
@@ -56,60 +53,43 @@ class _AddressesScreenState extends State<AddressesScreen> {
       ),
       body: Column(
         children: [
-          ProfileItemWidget(
-            onTap: () {
-              context.push(Routes.mapScreen);
-            },
-            icon: Icons.add,
-            text: 'Add New Address',
-          ),
           Expanded(
-            child: BlocConsumer<HomeCubit, HomeStates>(
-              listener: (context, state) {
-                if(state is CreateNewOrderSuccessState) {
-                  context.push(Routes.orderCreatedScreen);
-                }
-              },
+            child: BlocBuilder<HomeCubit, HomeStates>(
               buildWhen: (prev, current) {
-                return current is GetAllAddressesLoadingState
-                    || current is GetAllAddressesSuccessState
-                    || current is GetAllAddressesErrorState;
+                return current is GetOrdersLoadingState
+                    || current is GetOrdersSuccessState
+                    || current is GetOrdersErrorState;
               },
               builder: (context, state) {
-                if(state is GetAllAddressesLoadingState) {
+                if (state is GetOrdersLoadingState) {
                   return Skeletonizer(
                     enabled: true,
-                    child: ListView.builder(
+                    child: ListView.separated(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                      ),
+                      separatorBuilder: (context, index) => verticalSpace16,
                       itemBuilder: (context, index) {
-                        return ProfileItemWidget(
-                          onTap: () {
-
-                          },
-                          icon: Icons.location_city,
-                          text: 'Loading...',
-                        );
+                        return OrderItemWidget();
                       },
                       itemCount: 20,
                     ),
                   );
                 }
 
-                return ListView.builder(
+                return ListView.separated(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                  ),
+                  separatorBuilder: (context, index) => verticalSpace16,
                   itemBuilder: (context, index) {
-                    AddressModel address = homeCubit.addressesModel!.addresses[index];
+                    OrderModel orderModel = homeCubit.ordersModel!.data[index];
 
-                    return AddressItemWidget(
-                      onTap: isFromCheckout ? () {
-                        homeCubit.selectedAddressId = address.id;
-                        homeCubit.createOrder();
-                      } : null,
-                      addressId: address.id.toString(),
-                      icon: Icons.location_city,
-                      text: address.fullAddress,
-                      isDefault: address.isDefault,
+                    return OrderItemWidget(
+                      orderModel: orderModel,
                     );
                   },
-                  itemCount: homeCubit.addressesModel!.addresses.length,
+                  itemCount: homeCubit.ordersModel!.data.length,
                 );
               },
             ),

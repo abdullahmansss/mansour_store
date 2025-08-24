@@ -6,7 +6,7 @@ import 'package:mansour_store/core/util/constants/spacing.dart';
 import 'package:mansour_store/core/util/cubit/home_cubit.dart';
 
 class AddressItemWidget extends StatelessWidget {
-  final GestureTapCallback onTap;
+  final GestureTapCallback? onTap;
   final IconData icon;
   final String text;
   final bool isWithDivider;
@@ -32,34 +32,38 @@ class AddressItemWidget extends StatelessWidget {
       children: [
         InkWell(
           onTap: () {
-            showPrimaryMenu(
-              context: context,
-              key: moreKey,
-              isBottomHeight: 30.0,
-              items: [
-                if(!isDefault)
+            if(onTap != null) {
+              onTap!();
+            } else {
+              showPrimaryMenu(
+                context: context,
+                key: moreKey,
+                isBottomHeight: 30.0,
+                items: [
+                  if(!isDefault)
+                    PopupMenuItem(
+                      onTap: () {
+                        homeCubit.setDefaultAddress(
+                          addressId: addressId,
+                        );
+                      },
+                      child: Text(
+                        'Set as Default',
+                        style: TextStylesManager.regular14,
+                      ),
+                    ),
                   PopupMenuItem(
-                  onTap: () {
-                    homeCubit.setDefaultAddress(
-                      addressId: addressId,
-                    );
-                  },
-                  child: Text(
-                    'Set as Default',
-                    style: TextStylesManager.regular14,
+                    onTap: () {
+                      // Handle delete action
+                    },
+                    child: Text(
+                      'Edit',
+                      style: TextStylesManager.regular14,
+                    ),
                   ),
-                ),
-                PopupMenuItem(
-                  onTap: () {
-                    // Handle delete action
-                  },
-                  child: Text(
-                    'Edit',
-                    style: TextStylesManager.regular14,
-                  ),
-                ),
-              ],
-            );
+                ],
+              );
+            }
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -104,12 +108,19 @@ class AddressItemWidget extends StatelessWidget {
                   ),
                 ),
                 horizontalSpace16,
-                Icon(
+                if(onTap == null)
+                  Icon(
                   key: moreKey,
                   Icons.more_vert_outlined,
                   size: 18,
                   color: ColorsManager.textColor,
                 ),
+                if(onTap != null)
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 18,
+                    color: ColorsManager.textColor,
+                  ),
               ],
             ),
           ),

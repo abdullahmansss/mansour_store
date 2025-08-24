@@ -5,6 +5,7 @@ import 'package:mansour_store/core/theme/colors.dart';
 import 'package:mansour_store/core/theme/text_styles.dart';
 import 'package:mansour_store/core/util/constants/primary/primary_button.dart';
 import 'package:mansour_store/core/util/constants/primary/primary_padding.dart';
+import 'package:mansour_store/core/util/constants/routes.dart';
 import 'package:mansour_store/core/util/constants/spacing.dart';
 import 'package:mansour_store/core/util/cubit/home_cubit.dart';
 import 'package:mansour_store/core/util/cubit/home_states.dart';
@@ -34,31 +35,30 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorsManager.whiteColor,
-      appBar: widget.isWithAppBar ? AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_outlined,
-            color: ColorsManager.textColor,
-          ),
-          onPressed: () {
-            context.pop;
-          },
-        ),
-        centerTitle: true,
-        backgroundColor: ColorsManager.whiteColor,
-      ) : null,
+      appBar: widget.isWithAppBar
+          ? AppBar(
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios_new_outlined,
+                  color: ColorsManager.textColor,
+                ),
+                onPressed: () {
+                  context.pop;
+                },
+              ),
+              centerTitle: true,
+              backgroundColor: ColorsManager.whiteColor,
+            )
+          : null,
       body: BlocBuilder<HomeCubit, HomeStates>(
         buildWhen: (prev, current) {
-          return current is GetCartLoadingState
-              || current is GetCartSuccessState
-              || current is GetCartErrorState;
+          return current is GetCartLoadingState || current is GetCartSuccessState || current is GetCartErrorState;
         },
         builder: (context, state) {
-          if(homeCubit.cartModel!.data.items.isEmpty) {
+          if (homeCubit.cartModel!.data.items.isEmpty) {
             return Column(
               children: [
-                if(!widget.isWithAppBar)
-                  verticalSpace24,
+                if (!widget.isWithAppBar) verticalSpace24,
                 Expanded(
                   child: Center(
                     child: Text(
@@ -75,8 +75,7 @@ class _CartScreenState extends State<CartScreen> {
 
           return Column(
             children: [
-              if(!widget.isWithAppBar)
-                verticalSpace24,
+              if (!widget.isWithAppBar) verticalSpace24,
               Expanded(
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(
@@ -110,6 +109,8 @@ class _CartScreenState extends State<CartScreen> {
                               children: [
                                 Text(
                                   item.product.name ?? '',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                   style: TextStylesManager.bold16,
                                 ),
                                 verticalSpace8,
@@ -132,7 +133,7 @@ class _CartScreenState extends State<CartScreen> {
                                     children: [
                                       IconButton(
                                         onPressed: () {
-                                          if(item.quantity != 1) {
+                                          if (item.quantity != 1) {
                                             homeCubit.updateCartQuantity(
                                               itemId: item.id,
                                               quantity: item.quantity - 1,
@@ -185,7 +186,6 @@ class _CartScreenState extends State<CartScreen> {
                   itemCount: homeCubit.cartModel!.data.items.length,
                 ),
               ),
-
               PrimaryPadding(
                 child: Container(
                   decoration: BoxDecoration(
@@ -205,7 +205,12 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                         verticalSpace16,
                         PrimaryButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.push<bool>(
+                              Routes.addressesScreen,
+                              arguments: true,
+                            );
+                          },
                           isLoading: false,
                           text: 'Checkout',
                         ),
